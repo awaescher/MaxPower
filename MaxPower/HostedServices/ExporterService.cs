@@ -24,6 +24,8 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 			{
 				foreach (var inverter in Inverters)
 				{
+					Logger.LogInformation("Trying inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".", inverter.Id, inverter.Ip, inverter.Port);
+
 					try
 					{
 						var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port);
