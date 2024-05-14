@@ -25,8 +25,10 @@ public class Program
 		builder.Services.AddSingleton(maxSettings);
 		builder.Services.AddSingleton<IEnumerable<InverterConfiguration>>(inverters);
 
-		//builder.Services.AddTransient<IMaxTalkClient, MaxTalkClient>();
-		builder.Services.AddTransient<IMaxTalkClient, FakeMaxTalkClient>();
+		if (maxSettings.UseMockData)
+			builder.Services.AddTransient<IMaxTalkClient, FakeMaxTalkClient>();
+		else
+			builder.Services.AddTransient<IMaxTalkClient, MaxTalkClient>();
 
 		builder.Services.AddHostedService<ExporterService>();
 
@@ -54,10 +56,10 @@ internal class FakeMaxTalkClient : IMaxTalkClient
 		{ 
 			Source = "FP",
 			Destination = inverterId.ToString().PadLeft(2, '0'),
-			EnergyDay = 12,
-			EnergyMonth = 360,
-			EnergyYear = 5300,
-			EnergyTotal = 78100,
+			EnergyDay = 10 + inverterId,
+			EnergyMonth = 360 + inverterId,
+			EnergyYear = 5300 + inverterId,
+			EnergyTotal = 78100 + inverterId,
 		});
 	}
 }
