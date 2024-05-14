@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 300s
+  evaluation_interval: 300s
+
+scrape_configs:
+  - job_name: "maxpower metrics"
+    static_configs:
+      - targets: ["maxpower:8080"]
