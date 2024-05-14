@@ -1,5 +1,7 @@
 using System.Text;
 
+namespace MaxTalkSharp;
+
 public static class QueryBuilder
 {
     private const int CHECKSUM_LENGTH = 4;
