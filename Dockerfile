@@ -16,12 +16,11 @@ WORKDIR /
 COPY ./MaxPower /app/MaxPower/
 COPY ./MaxTalkSharp /app/MaxTalkSharp/
 WORKDIR /app/MaxPower/
-RUN dotnet publish -c Release -r linux-arm64 -o out -p:PublishSingleFile=true --self-contained true /p:AssemblyVersion=$SEMVERSION /p:Version=$SEMVERSION
+RUN dotnet publish -c Release -r linux-arm64 -o out -p:PublishSingleFile=true --self-contained true /p:AssemblyVersion=0.1.0 /p:Version=0.1.0
 
 # RUNTIME CONTAINER
 FROM mcr.microsoft.com/dotnet/aspnet:8.0.2-jammy-arm64v8 AS runtime
 EXPOSE 80
 WORKDIR /app
 COPY --from=build /app/MaxPower/out ./
-RUN rm appsettings.Development.json
 ENTRYPOINT ["./MaxPower", ""]
