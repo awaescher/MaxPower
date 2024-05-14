@@ -14,6 +14,7 @@ RUN dotnet restore
 # copy and build app and libraries
 WORKDIR /
 COPY ./MaxPower /app/MaxPower/
+COPY ./MaxTalkSharp /app/MaxTalkSharp/
 WORKDIR /app/MaxPower/
 RUN dotnet publish -c Release -r linux-arm64 -o out -p:PublishSingleFile=true --self-contained true /p:AssemblyVersion=$SEMVERSION /p:Version=$SEMVERSION
 
