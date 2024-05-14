@@ -23,4 +23,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0.2-jammy-arm64v8 AS runtime
 EXPOSE 80
 WORKDIR /app
 COPY --from=build /app/MaxPower/out ./
+RUN rm /app/appsettings.Development.json
 ENTRYPOINT ["./MaxPower", ""]
