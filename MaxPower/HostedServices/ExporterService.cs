@@ -1,6 +1,5 @@
 ﻿using MaxTalkSharp;
 using Prometheus;
-using System.Collections.Concurrent;
 
 namespace MaxPower.HostedServices;
 
@@ -24,7 +23,7 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 			{
 				foreach (var inverter in Inverters)
 				{
-					Logger.LogInformation("Trying inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".", inverter.Id, inverter.Ip, inverter.Port);
+					Logger.LogInformation("Reading data from inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\" ...", inverter.Id, inverter.Ip, inverter.Port);
 
 					try
 					{
