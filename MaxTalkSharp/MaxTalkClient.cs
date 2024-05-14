@@ -3,14 +3,14 @@ using System.Text;
 
 namespace MaxTalkSharp;
 
-public class MaxTalkClient
+public class MaxTalkClient : IMaxTalkClient
 {
 	public static string ENERGY_DAY = "KDY";
 	public static string ENERGY_MONTH = "KMT";
 	public static string ENERGY_YEAR = "KYR";
 	public static string ENERGY_TOTAL = "KT0";
 
-	public static async Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000)
+	public async Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000)
     {
 		using var client = new TcpClient();
 		
