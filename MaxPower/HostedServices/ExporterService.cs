@@ -30,10 +30,10 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 						var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port);
 
 						string[] labels = [inverter.Ip, inverter.Id.ToString()];
-						_energyDay.WithLabels(labels).IncTo(data.EnergyDay);
-						_energyMonth.WithLabels(labels).IncTo(data.EnergyMonth);
-						_energyYear.WithLabels(labels).IncTo(data.EnergyYear);
-						_energyTotal.WithLabels(labels).IncTo(data.EnergyTotal);
+						_energyDay.WithLabels(labels).Set(data.EnergyDay);
+						_energyMonth.WithLabels(labels).Set(data.EnergyMonth);
+						_energyYear.WithLabels(labels).Set(data.EnergyYear);
+						_energyTotal.WithLabels(labels).Set(data.EnergyTotal);
 					}
 					catch (Exception ex)
 					{
