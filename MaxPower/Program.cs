@@ -22,6 +22,8 @@ public class Program
 		var maxSettings = builder.Configuration.GetSection("MaxSettings").Get<MaxSettings>() ?? new MaxSettings();
 		var inverters = builder.Configuration.GetSection("Inverters").Get<InverterConfiguration[]>() ?? [];
 
+		Log.Logger.Information($"Found {(inverters.Length == 1 ? "1 inverter" : $"{inverters.Length} inverters")} to process.");
+
 		builder.Services.AddSingleton(maxSettings);
 		builder.Services.AddSingleton<IEnumerable<InverterConfiguration>>(inverters);
 
