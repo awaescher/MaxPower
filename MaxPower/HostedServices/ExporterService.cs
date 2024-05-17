@@ -17,36 +17,35 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 
 	protected override async Task ExecuteAsync(CancellationToken cancellationToken)
 	{
-		try
+		while (!cancellationToken.IsCancellationRequested)
 		{
-			while (!cancellationToken.IsCancellationRequested)
+			foreach (var inverter in Inverters)
 			{
-				foreach (var inverter in Inverters)
+				if (cancellationToken.IsCancellationRequested)
+					return;
+
+				Logger.LogInformation("Reading data from inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\" ...", inverter.Id, inverter.Ip, inverter.Port);
+
+				try
 				{
-					Logger.LogInformation("Reading data from inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\" ...", inverter.Id, inverter.Ip, inverter.Port);
+					var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port);
 
-					try
-					{
-						var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port);
+					string[] labels = [inverter.Ip, inverter.Id.ToString()];
+					_energyDay.WithLabels(labels).Set(data.EnergyDay);
+					_energyMonth.WithLabels(labels).Set(data.EnergyMonth);
+					_energyYear.WithLabels(labels).Set(data.EnergyYear);
+					_energyTotal.WithLabels(labels).Set(data.EnergyTotal);
 
-						string[] labels = [inverter.Ip, inverter.Id.ToString()];
-						_energyDay.WithLabels(labels).Set(data.EnergyDay);
-						_energyMonth.WithLabels(labels).Set(data.EnergyMonth);
-						_energyYear.WithLabels(labels).Set(data.EnergyYear);
-						_energyTotal.WithLabels(labels).Set(data.EnergyTotal);
-					}
-					catch (Exception ex)
-					{
-						Logger.LogError(ex, "An error occured while executing inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".", inverter.Id, inverter.Ip, inverter.Port);
-					}
+					Logger.LogInformation("Inverter \"{inverterId}\" made \"{energyDay} kWh today.", inverter.Id, data.EnergyDay);
 				}
-
-				Logger.LogInformation($"Entering sleep state for {MaxSettings.PollIntervalSeconds} seconds.");
-				await Task.Delay(TimeSpan.FromSeconds(MaxSettings.PollIntervalSeconds), cancellationToken);
+				catch (Exception ex)
+				{
+					Logger.LogError(ex, "An error occured while executing inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".", inverter.Id, inverter.Ip, inverter.Port);
+				}
 			}
-		}
-		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-		{
+
+			Logger.LogInformation($"Entering sleep state for {MaxSettings.PollIntervalSeconds} seconds.");
+			await Task.Delay(TimeSpan.FromSeconds(MaxSettings.PollIntervalSeconds), cancellationToken);
 		}
 	}
 }

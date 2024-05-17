@@ -44,7 +44,6 @@ public class MaxTalkClient : IMaxTalkClient
         finally
         {
             client.Close();
-            client.Dispose();
         }
 
         return new MaxValues();
