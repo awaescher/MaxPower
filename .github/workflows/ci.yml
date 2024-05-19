@@ -44,7 +44,7 @@ jobs:
       run: dotnet test --no-build --configuration=Release --verbosity normal
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag awaescher/maxpower:${{steps.gitversion.outputs.semVer}} --tag awaescher/maxpower:latest --build-arg SEMVERSION=${{steps.gitversion.outputs.semVer}}
+      run: docker build . --file Dockerfile --tag awaescher/maxpower:${{steps.gitversion.outputs.semVer}} --tag awaescher/maxpower:latest --build-arg SEMVERSION=${{steps.gitversion.outputs.FullSemVer}}  --build-arg ASSEMBLYSEMVERSION=${{steps.gitversion.outputs.AssemblySemVer}}
 
     - name: Log in to Docker Hub
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
