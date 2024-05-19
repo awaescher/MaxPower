@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0.101 AS build
 WORKDIR /
 
+ARG ASSEMBLYSEMVERSION
 ARG SEMVERSION
 
 # copy csproj and restore as distinct layers
