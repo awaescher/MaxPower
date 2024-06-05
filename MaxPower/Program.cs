@@ -41,10 +41,7 @@ public class Program
 		app.UseHttpsRedirection();
 		app.UseRouting();
 
-		app.UseEndpoints(endpoints =>
-		{
-			endpoints.MapMetrics();
-		});
+		app.MapMetrics();
 
 		app.Run();
 	}
