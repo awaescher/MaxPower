@@ -24,25 +24,27 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 				if (cancellationToken.IsCancellationRequested)
 					return;
 
-				Logger.LogInformation("Reading data from inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\" ...", inverter.Id, inverter.Ip, inverter.Port);
+				Logger.LogInformation("Reading data from inverter {inverterId} at {inverterIp}:{inverterPort} ...", inverter.Id, inverter.Ip, inverter.Port);
+
+				string[] labels = [inverter.Ip, inverter.Id.ToString()];
+
+				MaxValues? data = null;
 
 				try
 				{
-					var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port, timeout: 8000, cancellationToken);
-
-					string[] labels = [inverter.Ip, inverter.Id.ToString()];
-					_energyDay.WithLabels(labels).Set(data.EnergyDay);
-					_energyMonth.WithLabels(labels).Set(data.EnergyMonth);
-					_energyYear.WithLabels(labels).Set(data.EnergyYear);
-					_energyTotal.WithLabels(labels).Set(data.EnergyTotal);
-
-					Logger.LogInformation("Inverter \"{inverterId}\" made \"{energyDay} kWh today.", inverter.Id, data.EnergyDay);
+					data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port, timeout: 8000, cancellationToken);
+					Logger.LogInformation("Inverter {inverterId} made {energyDay} kWh today.", inverter.Id, data.EnergyDay);
 				}
 				catch (Exception ex)
 				{
-					var message = "An error occured while executing inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".\r\nMessage: {message}";
+					var message = "An error occured while executing inverter {inverterId} at {inverterIp}:{inverterPort}.\r\nMessage: {message}";
 					Logger.LogError(ex, message, inverter.Id, inverter.Ip, inverter.Port, ex.Message + Environment.NewLine + ex.InnerException?.Message ?? "");
 				}
+
+				_energyDay.WithLabels(labels).Set(data?.EnergyDay ?? 0);
+				_energyMonth.WithLabels(labels).Set(data?.EnergyMonth ?? 0);
+				_energyYear.WithLabels(labels).Set(data?.EnergyYear ?? 0);
+				_energyTotal.WithLabels(labels).Set(data?.EnergyTotal ?? 0);
 			}
 
 			Logger.LogInformation($"Entering sleep state for {MaxSettings.PollIntervalSeconds} seconds.");
