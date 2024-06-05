@@ -2,6 +2,6 @@
 {
 	public interface IMaxTalkClient
 	{
-		Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000);
+		Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000, CancellationToken cancellationToken = default);
 	}
 }

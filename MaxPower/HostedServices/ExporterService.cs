@@ -28,7 +28,7 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 
 				try
 				{
-					var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port);
+					var data = await MaxTalkClient.RequestAsync(inverter.Ip, inverter.Id, inverter.Port, timeout: 8000, cancellationToken);
 
 					string[] labels = [inverter.Ip, inverter.Id.ToString()];
 					_energyDay.WithLabels(labels).Set(data.EnergyDay);
@@ -40,7 +40,8 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
 				}
 				catch (Exception ex)
 				{
-					Logger.LogError(ex, "An error occured while executing inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".", inverter.Id, inverter.Ip, inverter.Port);
+					var message = "An error occured while executing inverter \"{inverterId}\" at \"{inverterIp}:{inverterPort}\".\r\nMessage: {message}";
+					Logger.LogError(ex, message, inverter.Id, inverter.Ip, inverter.Port, ex.Message + Environment.NewLine + ex.InnerException?.Message ?? "");
 				}
 			}
 
