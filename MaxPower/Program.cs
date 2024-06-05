@@ -52,7 +52,7 @@ public class Program
 
 internal class FakeMaxTalkClient : IMaxTalkClient
 {
-	public Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000)
+	public Task<MaxValues> RequestAsync(string ip, int inverterId, int port, int timeout = 8000, CancellationToken cancellationToken = default)
 	{
 		return Task.FromResult(new MaxValues 
 		{ 
