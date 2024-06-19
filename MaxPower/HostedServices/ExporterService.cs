@@ -24,12 +24,18 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
             Logger.LogInformation("Entering sleep state for {pollinterval} seconds.", MaxSettings.PollIntervalSeconds);
             await Task.Delay(TimeSpan.FromSeconds(MaxSettings.PollIntervalSeconds), cancellationToken);
         }
+
+        if (cancellationToken.IsCancellationRequested)
+            Logger.LogInformation("Cancellation requested, leaving loop ...");
     }
 
     private async Task ProcessInverter(InverterConfiguration inverter, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
+        {
+            Logger.LogInformation("Cancellation requested, skipping inverter {inverterId} ...", inverter.Id);
             return;
+        }
 
         // add an additional (generous) timeout to prevent the system from hanging if the socket conection hangs.
         // seems to happen sometimes after some hours of working perfectly ...
