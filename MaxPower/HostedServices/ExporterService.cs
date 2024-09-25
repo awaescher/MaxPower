@@ -19,7 +19,10 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Parallel.ForEachAsync(Inverters, cancellationToken, async (inverter, cancellationToken) => await ProcessInverter(inverter, cancellationToken));
+            foreach (var inverter in Inverters)
+                await ProcessInverter(inverter, cancellationToken);
+
+            //await Parallel.ForEachAsync(Inverters, cancellationToken, async (inverter, cancellationToken) => await ProcessInverter(inverter, cancellationToken));
 
             Logger.LogInformation("Entering sleep state for {pollinterval} seconds.", MaxSettings.PollIntervalSeconds);
             await Task.Delay(TimeSpan.FromSeconds(MaxSettings.PollIntervalSeconds), cancellationToken);
@@ -31,7 +34,7 @@ public class ExporterService(MaxSettings maxSettings, IEnumerable<InverterConfig
         if (cancellationToken.IsCancellationRequested)
             return;
 
-        // add an additional (generous) timeout to prevent the system from hanging if the socket conection hangs.
+        // add an additional (generous) timeout to prevent the system from hanging if the socket connection hangs.
         // seems to happen sometimes after some hours of working perfectly ...
         var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(10));
