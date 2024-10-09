@@ -7,6 +7,24 @@ services:
     env_file:
       - maxpower.env
     restart: always
+
+  # I found that the inverters turned inaccessible after ~24 hours of running MaxPower.
+  # Strangely enough, only restarting the MaxPower-container fixed it.
+  # I checked the code but could not find any leaks or possible connection issues.
+  # That's why I went with the crowbar tactic and added this additional docker container
+  # that restarts the MaxPower-container regularly. You might need it too.
+  restarter:
+    image: docker:cli
+    restart: unless-stopped
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        while true; do
+          echo "Restarting MaxPower ..."
+          docker restart maxpower
+          sleep 3600
+        done
     
   prometheus:
     image: prom/prometheus:latest
